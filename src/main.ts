@@ -13,7 +13,9 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, staticPath));
   app.enableCors();
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT, "0.0.0.0");
+  console.log(`Application is running on: ${await app.getUrl()}`);
+
   // const app = await NestFactory.create(AppModule);
   // await app.listen(3000);
 }
