@@ -20,7 +20,8 @@ import { SizesModule } from './sizes/sizes.module';
       isGlobal: true, // Hace que las variables sean globales en toda la aplicación
     }),
     // Configuración de la conexión a MongoDB
-    MongooseModule.forRoot(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`),
+    // MongooseModule.forRoot(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`),
+    MongooseModule.forRoot(`mongodb+srv://Sys_admin:Luis1213@cluster0.dxq2jfo.mongodb.net/?retryWrites=true&w=majority`),
     MulterModule.register({
       dest: './uploads', // Directorio donde se guardarán las imágenes subidas
     }),
