@@ -117,7 +117,7 @@ export class InventoryService {
       .find()
       .populate('idImagen') // Aquí se especifica el campo que se va a "populate"
 
-      const baseUrl = 'http://localhost:3000/files/';
+      const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
     // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
 
     console.log(inventory);
