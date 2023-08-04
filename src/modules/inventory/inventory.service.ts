@@ -116,7 +116,7 @@ export class InventoryService {
     let inventory = await this.inventoryModel
       .find()
       .populate('idImagen') // Aquí se especifica el campo que se va a "populate"
-
+      // const baseUrl = 'http://localhost:3000/files/';
       const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
     // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
 
@@ -135,7 +135,8 @@ export class InventoryService {
 
   async getInventoryBySize(sizeId:Types.ObjectId){
     let inventory = await this.inventoryModel.find({ sizeId }).populate('idImagen')
-    const baseUrl = 'http://localhost:3000/files/';
+    // const baseUrl = 'http://localhost:3000/files/';
+    const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
     // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
 
     console.log(inventory);
