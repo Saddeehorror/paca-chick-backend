@@ -1,6 +1,6 @@
 // inventory.service.ts
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Inventory } from '../../models/inventory.model';
@@ -34,7 +34,7 @@ export class InventoryService {
 
         // Comprimir la imagen usando sharp
         const compressedImageBuffer = await sharp(file.buffer)
-        .resize(800) // Redimensionar según tus necesidades
+        .resize(500) // Redimensionar según tus necesidades
         .toBuffer();
 
     const fileSaved = await fs.writeFile(filePath, compressedImageBuffer); // Mover el archivo del directorio temporal a uploads
@@ -116,8 +116,8 @@ export class InventoryService {
     let inventory = await this.inventoryModel
       .find()
       .populate('idImagen') // Aquí se especifica el campo que se va a "populate"
-      // const baseUrl = 'http://localhost:3000/files/';
-      const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
+      const baseUrl = 'http://localhost:3000/files/';
+      // const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
     // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
 
     console.log(inventory);
@@ -134,9 +134,9 @@ export class InventoryService {
   // Puedes agregar más métodos para otras operaciones CRUD, como actualizar y eliminar inventario.
 
   async getInventoryBySize(sizeId:Types.ObjectId){
-    let inventory = await this.inventoryModel.find({ sizeId }).populate('idImagen')
-    // const baseUrl = 'http://localhost:3000/files/';
-    const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
+    let inventory = await this.inventoryModel.find({ sizeId,deleted:false }).populate('idImagen')
+    const baseUrl = 'http://localhost:3000/files/';
+    // const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
     // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
 
     console.log(inventory);
@@ -145,5 +145,22 @@ export class InventoryService {
       
     });
     return inventory
+  }
+
+
+  async remove(id: string) {
+    const idAsObjectId = new Types.ObjectId(id); // Convertir la cadena de texto en ObjectId
+
+    const updatedInventory = await this.inventoryModel.findByIdAndUpdate(
+      id,
+      { deleted: true }, // Cambiar la propiedad 'deleted' a 'false'
+      { new: true }
+    );
+
+    if (!updatedInventory) {
+      throw new NotFoundException(`Inventario con ID ${id} no encontrado`);
+    }
+
+    return updatedInventory;
   }
 }

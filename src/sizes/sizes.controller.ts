@@ -43,6 +43,6 @@ export class SizesController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.sizesService.remove(+id);
+    return this.sizesService.remove(id);
   }
 }

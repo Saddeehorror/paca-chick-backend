@@ -10,6 +10,8 @@ export class Size extends Document{
     icon: string;
     @Prop({ type: Types.ObjectId, ref: 'parent', default:null})
     parentId: Types.ObjectId;
+    @Prop({default:false})
+    deleted: boolean;
 }
 
 

@@ -1,6 +1,6 @@
 // inventory.controller.ts
 
-import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, Param, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, Param, Res, Delete } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory } from '../../models/inventory.model';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -61,6 +61,11 @@ export class InventoryController {
     const objectIdParentId = new Types.ObjectId(id); // Convertir el string a ObjectId
     const inventory = await this.inventoryService.getInventoryBySize(objectIdParentId);
     return inventory;
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.inventoryService.remove(id);
   }
 
 

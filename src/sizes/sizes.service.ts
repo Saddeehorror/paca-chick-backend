@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSizeDto } from './dto/create-size.dto';
 import { UpdateSizeDto } from './dto/update-size.dto';
 import { Size } from './entities/size.entity';
@@ -40,12 +40,12 @@ export class SizesService {
   }
 
   async findAllParents(){
-    let inventory = this.SizeModel.find({ parentId: null }).exec();
+    let inventory = this.SizeModel.find({ parentId: null,deleted:false }).exec();
     return inventory
   }
 
   async findAllChild(parentId:Types.ObjectId){
-    let inventory = this.SizeModel.find({ parentId }).exec();
+    let inventory = this.SizeModel.find({ parentId,deleted:false }).exec();
     return inventory
   }
 
@@ -57,7 +57,19 @@ export class SizesService {
     return `This action updates a #${id} size`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} size`;
+  async remove(id: string) {
+    const idAsObjectId = new Types.ObjectId(id); // Convertir la cadena de texto en ObjectId
+
+    const updatedSize = await this.SizeModel.findByIdAndUpdate(
+      id,
+      { deleted: true }, // Cambiar la propiedad 'deleted' a 'false'
+      { new: true }
+    );
+
+    if (!updatedSize) {
+      throw new NotFoundException(`Talla con ID ${id} no encontrada`);
+    }
+
+    return updatedSize;
   }
 }
