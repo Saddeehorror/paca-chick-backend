@@ -33,7 +33,8 @@ export class SizesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sizesService.findOne(+id);
+    const objectIdParentId = new Types.ObjectId(id); // Convertir el string a ObjectId
+    return this.sizesService.findOne(objectIdParentId);
   }
 
   @Patch(':id')

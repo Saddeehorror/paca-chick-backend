@@ -49,8 +49,9 @@ export class SizesService {
     return inventory
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} size`;
+  findOne(id: Types.ObjectId) {
+    let inventory = this.SizeModel.find({ _id:id }).exec();
+    return inventory
   }
 
   update(id: number, updateSizeDto: UpdateSizeDto) {
