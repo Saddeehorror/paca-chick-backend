@@ -51,10 +51,16 @@ export class InventoryService {
     const size  = new Types.ObjectId(sizeId);
 
 
+    const shortSku = this.generateShortSku(
+      image._id.toString(),
+      size.toString(),
+    );
+
     const inventory = await this.createInventory({
       descripcion:'',
       idImagen:image._id,
-      sizeId:size
+      sizeId:size,
+      sku:shortSku
     })
 
     console.log('xxxx',inventory);
@@ -163,4 +169,22 @@ export class InventoryService {
 
     return updatedInventory;
   }
+
+  generateShortSku(idImagen: string, sizeId: string): string {
+    // Obtener las iniciales de idImagen (por ejemplo, las dos primeras letras)
+    const imageInitials = idImagen.substr(0, 2).toUpperCase();
+  
+    // Obtener las últimas dos cifras de sizeId
+    const sizeDigits = sizeId.substr(sizeId.length - 2);
+
+      // Generar un número aleatorio de 4 cifras
+  const randomDigits = Math.floor(1000 + Math.random() * 9000);
+
+  
+    // Combinar las iniciales de idImagen y las últimas dos cifras de sizeId
+    const shortSku = `${imageInitials}${sizeDigits}${randomDigits}`;
+  
+    return shortSku;
+  }
+
 }

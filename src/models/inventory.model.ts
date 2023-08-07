@@ -9,7 +9,13 @@ import { Size } from 'src/sizes/entities/size.entity';
 export class Inventory extends Document {
 
   @Prop({ type: Types.ObjectId, ref: 'File' })
-    idImagen: File; // Agregamos el campo idImagen para almacenar el nombre de la imagen
+  idImagen: File; // Agregamos el campo idImagen para almacenar el nombre de la imagen
+
+  @Prop({default:'NA'})
+  sku: string;
+
+  @Prop({default:0})
+  precio: number;
 
   @Prop()
   descripcion: string;
@@ -20,11 +26,11 @@ export class Inventory extends Document {
   @Prop({default:false})
   deleted: boolean;
 
-  @Prop({ default: Date.now }) // Agregamos el campo fechaCreacion con valor por defecto Date.now()
+  @Prop({ default: Date.now })
   fechaCreacion: Date;
 
   @Prop({ type: Types.ObjectId, ref: 'Size' })
-  sizeId: Types.ObjectId; // Agregamos el campo idImagen para almacenar el nombre de la imagen
+  sizeId: Types.ObjectId;
 }
 
 export const InventorySchema = SchemaFactory.createForClass(Inventory);
