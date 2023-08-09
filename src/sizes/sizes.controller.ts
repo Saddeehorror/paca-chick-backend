@@ -24,6 +24,11 @@ export class SizesController {
     return this.sizesService.findAllParents();
   }
 
+  @Get('active')
+  findAllActive() {
+    return this.sizesService.findAllActive();
+  }
+
   @Get('childs/:id')
   findAllChilds(@Param('id') id: string) {
     const objectIdParentId = new Types.ObjectId(id); // Convertir el string a ObjectId

@@ -9,6 +9,7 @@ import { MulterFile } from 'src/interfaces/multer-file.interface';
 import { FileService } from '../files/files.service';
 import { Types } from 'mongoose'; // Agrega la importación de Types desde Mongoose
 import * as sharp from 'sharp'; // Importar sharp
+import { InventorySpecification } from './inventory.specification';
 
 
 @Injectable()
@@ -140,7 +141,7 @@ export class InventoryService {
   // Puedes agregar más métodos para otras operaciones CRUD, como actualizar y eliminar inventario.
 
   async getInventoryBySize(sizeId:Types.ObjectId){
-    let inventory = await this.inventoryModel.find({ sizeId,deleted:false }).populate('idImagen')
+    let inventory = await this.inventoryModel.find({ sizeId,deleted:false,active:true,aside:false }).populate('idImagen')
     const baseUrl = process.env.BASE_URL_FILE;
     // const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
     // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
@@ -150,6 +151,94 @@ export class InventoryService {
       (item.idImagen?.filePath)?item.idImagen.filePath = baseUrl + item.idImagen._id:''
       
     });
+    return inventory
+  }
+
+  async getInventoryInactiveFull(){
+    let inventory = await this.inventoryModel.find({ deleted:false,active:false,aside:false }).populate('idImagen').populate('sizeId')
+    console.log(inventory);
+    const baseUrl = process.env.BASE_URL_FILE;
+    // const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
+    // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
+
+    console.log(inventory);
+    await inventory.forEach(item => {
+      (item.idImagen?.filePath)?item.idImagen.filePath = baseUrl + item.idImagen._id:''
+    });
+    return inventory
+  }
+
+  async getInventoryFull(spec:InventorySpecification){
+    console.log(spec);
+    const query = this.inventoryModel.find({ deleted: false });
+    // if (spec.price !== undefined) {
+    //   query.where('precio').equals(spec.price);
+    // }
+  
+    // if (spec.active !== undefined) {
+    //   query.where('active').equals(spec.active);
+    // }
+  
+    if (spec.sku !== undefined) {
+      console.log('si hay');
+      query.where({sku:spec.sku});
+    }
+
+    if (spec.active !== undefined) {
+      query.where({active:spec.active});
+    }
+
+    if (spec.price !== undefined) {
+      query.where({precio:spec.price});
+    }
+
+    if (spec.categoryId !== undefined) {
+      query.where({sizeId:new Types.ObjectId(spec.categoryId)});
+    }
+  
+    // if (spec.categoryId) {
+    //   query.where('categoryId').equals(spec.categoryId);
+    // }
+    const inventory = await query.populate('idImagen').populate('sizeId').exec();
+    const baseUrl = process.env.BASE_URL_FILE;
+    inventory.forEach(item => {
+      if (item.idImagen?.filePath) {
+        item.idImagen.filePath = baseUrl + item.idImagen._id;
+      }
+    });
+  
+    return inventory;
+    // console.log(spec);
+    // let inventory = await this.inventoryModel.find({deleted:false,precio:spec.price,active:spec.active}).populate('idImagen').populate('sizeId')
+
+    // const baseUrl = process.env.BASE_URL_FILE;
+    // console.log(inventory);
+
+
+    // await inventory.forEach(item => {
+    //   (item.idImagen?.filePath)?item.idImagen.filePath = baseUrl + item.idImagen._id:''
+    // });
+    // return inventory
+  }
+
+  async activate(body:{id:string, active:boolean}){
+    console.log(body);
+    // let id = new Types.ObjectId(body.id);
+
+    let inventory = await this.inventoryModel.findByIdAndUpdate(body.id,
+      {active:body.active},
+      {new:true}
+      );
+    return inventory
+  }
+
+  async getInventoryByidFull(id:Types.ObjectId){
+    let inventory = await this.inventoryModel.findById(id).populate('idImagen')
+    const baseUrl = process.env.BASE_URL_FILE;
+    // const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
+    // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
+    (inventory.idImagen?.filePath)?inventory.idImagen.filePath = baseUrl + inventory.idImagen._id:''
+
     return inventory
   }
 
@@ -169,6 +258,39 @@ export class InventoryService {
 
     return updatedInventory;
   }
+
+  async aside(id: string) {
+    const idAsObjectId = new Types.ObjectId(id); // Convertir la cadena de texto en ObjectId
+
+    const updatedInventory = await this.inventoryModel.findByIdAndUpdate(
+      id,
+      { aside: true }, // Cambiar la propiedad 'active' a 'false'
+      { new: true }
+    );
+
+    if (!updatedInventory) {
+      throw new NotFoundException(`Inventario con ID ${id} no encontrado`);
+    }
+
+    return updatedInventory;
+  }
+
+  async update(body:{id:string,price:number,description:string}){
+    console.log(body);
+    const updatedInventory = await this.inventoryModel.findByIdAndUpdate(
+      body.id,
+      { precio: body.price,descripcion: body.description },
+      { new: true  }
+    );
+
+    if (!updatedInventory) {
+      throw new NotFoundException(`Inventario con ID ${body.id} no encontrado`);
+    }
+
+    return updatedInventory;
+  }
+
+
 
   generateShortSku(idImagen: string, sizeId: string): string {
     // Obtener las iniciales de idImagen (por ejemplo, las dos primeras letras)

@@ -20,8 +20,11 @@ export class Inventory extends Document {
   @Prop()
   descripcion: string;
 
-  @Prop({default:true})
+  @Prop({default:false})
   active: boolean;
+
+  @Prop({default:false})
+  aside: boolean;
 
   @Prop({default:false})
   deleted: boolean;

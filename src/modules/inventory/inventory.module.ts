@@ -15,5 +15,6 @@ import { File,FileSchema } from 'src/models/file.model';
   ],
   controllers: [InventoryController],
   providers: [InventoryService],
+  exports:[InventoryService,]
 })
 export class InventoryModule {}

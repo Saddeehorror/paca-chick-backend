@@ -11,6 +11,7 @@ import { join } from 'path';
 import { SizesModule } from './sizes/sizes.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -35,9 +36,11 @@ import { AuthModule } from './auth/auth.module';
     SizesModule,
     UsersModule,
     AuthModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
+  
 }

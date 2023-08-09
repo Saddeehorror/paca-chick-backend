@@ -1,6 +1,6 @@
 // inventory.controller.ts
 
-import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, Param, Res, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, Param, Res, Delete, Put, Query } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory } from '../../models/inventory.model';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -9,6 +9,7 @@ import { MulterFile } from '../../interfaces/multer-file.interface'; // Importam
 import { FileService } from '../files/files.service';
 import { Size } from 'src/sizes/entities/size.entity';
 import { Types } from 'mongoose';
+import { InventorySpecification } from './inventory.specification';
 
 
 @Controller('inventory')
@@ -42,7 +43,20 @@ export class InventoryController {
     return this.inventoryService.findAllInventory();
   }
 
+  @Get('control')
+  async getInventoryInactiveFull(@Query() spec: InventorySpecification): Promise<Inventory[]> {
+    return this.inventoryService.getInventoryFull(spec);
+  }
 
+  @Post('activate')
+  async activate(@Body() body: {id:string,active:boolean}): Promise<Inventory> {
+    return this.inventoryService.activate(body);
+  }
+
+  @Put()
+  update(@Body() body:{id:string,price:number,description:string}) {
+    return this.inventoryService.update(body);
+  }
 
 
   @Get('uploads/:filename')

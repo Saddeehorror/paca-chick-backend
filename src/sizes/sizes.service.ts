@@ -44,6 +44,11 @@ export class SizesService {
     return inventory
   }
 
+  async findAllActive(){
+    let inventory = this.SizeModel.find({deleted:false }).exec();
+    return inventory
+  }
+
   async findAllChild(parentId:Types.ObjectId){
     let inventory = this.SizeModel.find({ parentId,deleted:false }).exec();
     return inventory
