@@ -9,7 +9,9 @@ import { MongooseModule } from '@nestjs/mongoose';
   providers: [SizesService],
   imports: [
     MongooseModule.forFeature([{ name: Size.name, schema: SizeSchema }]),
-
+   ],
+   exports:[
+    SizesService
    ]
 })
 export class SizesModule {}

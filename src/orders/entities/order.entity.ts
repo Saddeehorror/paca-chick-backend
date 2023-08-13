@@ -15,8 +15,14 @@ export class Order extends Document{
     deleted: boolean;
     @Prop({default:false})
     confirmed: boolean;
+    @Prop({default:0})
+    advance: number;
+    @Prop({default:1})
+    status: number;
     @Prop({ type: Types.ObjectId, ref: 'inventory'})
     inventoryIds: Types.ObjectId[];
+    @Prop()
+    endDate: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order)

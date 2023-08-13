@@ -275,6 +275,22 @@ export class InventoryService {
     return updatedInventory;
   }
 
+  async asideFalse(id: string) {
+    const idAsObjectId = new Types.ObjectId(id); // Convertir la cadena de texto en ObjectId
+
+    const updatedInventory = await this.inventoryModel.findByIdAndUpdate(
+      id,
+      { aside: false }, // Cambiar la propiedad 'active' a 'false'
+      { new: true }
+    );
+
+    if (!updatedInventory) {
+      throw new NotFoundException(`Inventario con ID ${id} no encontrado`);
+    }
+
+    return updatedInventory;
+  }
+
   async update(body:{id:string,price:number,description:string}){
     console.log(body);
     const updatedInventory = await this.inventoryModel.findByIdAndUpdate(

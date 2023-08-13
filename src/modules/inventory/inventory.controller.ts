@@ -1,6 +1,6 @@
 // inventory.controller.ts
 
-import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, Param, Res, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, Param, Res, Delete, Put, Query,UseGuards } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory } from '../../models/inventory.model';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -10,7 +10,7 @@ import { FileService } from '../files/files.service';
 import { Size } from 'src/sizes/entities/size.entity';
 import { Types } from 'mongoose';
 import { InventorySpecification } from './inventory.specification';
-
+import { AuthGuard } from 'src/guard/auth.guard';
 
 @Controller('inventory')
 export class InventoryController {
@@ -49,6 +49,7 @@ export class InventoryController {
   }
 
   @Post('activate')
+  @UseGuards(AuthGuard)
   async activate(@Body() body: {id:string,active:boolean}): Promise<Inventory> {
     return this.inventoryService.activate(body);
   }
