@@ -48,6 +48,11 @@ export class InventoryController {
     return this.inventoryService.getInventoryFull(spec);
   }
 
+  @Get('news')
+  async getInventoryNewFull(): Promise<Inventory[]> {
+    return this.inventoryService.getInventoryNewFull();
+  }
+
   @Post('activate')
   @UseGuards(AuthGuard)
   async activate(@Body() body: {id:string,active:boolean}): Promise<Inventory> {

@@ -10,13 +10,15 @@ import { FileService } from '../files/files.service';
 import { Types } from 'mongoose'; // Agrega la importación de Types desde Mongoose
 import * as sharp from 'sharp'; // Importar sharp
 import { InventorySpecification } from './inventory.specification';
+import { SizesService } from 'src/sizes/sizes.service';
 
 
 @Injectable()
 export class InventoryService {
   constructor(
     @InjectModel(Inventory.name) private inventoryModel: Model<Inventory>,
-    private readonly fileService: FileService
+    private readonly fileService: FileService,
+    private sizesService:SizesService
 
     ) {}
 
@@ -143,15 +145,24 @@ export class InventoryService {
   async getInventoryBySize(sizeId:Types.ObjectId){
     let inventory = await this.inventoryModel.find({ sizeId,deleted:false,active:true,aside:false }).populate('idImagen')
     const baseUrl = process.env.BASE_URL_FILE;
-    // const baseUrl = 'https://paca-chick-backend-aav9-dev.fl0.io/files/';
-    // Combinar la URL base con el campo filePath para obtener la URL completa del archivo
 
-    console.log(inventory);
-    await inventory.forEach(item => {
-      (item.idImagen?.filePath)?item.idImagen.filePath = baseUrl + item.idImagen._id:''
-      
-    });
+    for (let index = 0; index < inventory.length; index++) {
+      (inventory[index].idImagen?.filePath)?inventory[index].idImagen.filePath = baseUrl + inventory[index].idImagen._id:''  
+
+      let size = await this.sizesService.findOne(inventory[index].sizeId);
+      inventory[index].sizeId = <any>size[0];
+    }
+
+
+
     return inventory
+
+    // console.log(inventory);
+    // await inventory.forEach(item => {
+    //   (item.idImagen?.filePath)?item.idImagen.filePath = baseUrl + item.idImagen._id:''
+      
+    // });
+    // return inventory
   }
 
   async getInventoryInactiveFull(){
@@ -170,14 +181,7 @@ export class InventoryService {
 
   async getInventoryFull(spec:InventorySpecification){
     console.log(spec);
-    const query = this.inventoryModel.find({ deleted: false });
-    // if (spec.price !== undefined) {
-    //   query.where('precio').equals(spec.price);
-    // }
-  
-    // if (spec.active !== undefined) {
-    //   query.where('active').equals(spec.active);
-    // }
+    const query = this.inventoryModel.find({ deleted: false, });
   
     if (spec.sku !== undefined) {
       console.log('si hay');
@@ -195,10 +199,7 @@ export class InventoryService {
     if (spec.categoryId !== undefined) {
       query.where({sizeId:new Types.ObjectId(spec.categoryId)});
     }
-  
-    // if (spec.categoryId) {
-    //   query.where('categoryId').equals(spec.categoryId);
-    // }
+
     const inventory = await query.populate('idImagen').populate('sizeId').exec();
     const baseUrl = process.env.BASE_URL_FILE;
     inventory.forEach(item => {
@@ -208,17 +209,28 @@ export class InventoryService {
     });
   
     return inventory;
-    // console.log(spec);
-    // let inventory = await this.inventoryModel.find({deleted:false,precio:spec.price,active:spec.active}).populate('idImagen').populate('sizeId')
+  }
 
-    // const baseUrl = process.env.BASE_URL_FILE;
-    // console.log(inventory);
+  async getInventoryNewFull(){
+    
+    let inventory = await this.inventoryModel.find({ deleted:false,active:true,aside:false }).populate('idImagen')
+    const baseUrl = process.env.BASE_URL_FILE;
 
+    for (let index = 0; index < inventory.length; index++) {
+      (inventory[index].idImagen?.filePath)?inventory[index].idImagen.filePath = baseUrl + inventory[index].idImagen._id:''  
 
-    // await inventory.forEach(item => {
-    //   (item.idImagen?.filePath)?item.idImagen.filePath = baseUrl + item.idImagen._id:''
-    // });
-    // return inventory
+      let size = await this.sizesService.findOne(inventory[index].sizeId);
+      inventory[index].sizeId = <any>size[0];
+    }
+
+    let last5:any[] = [];
+    let sizeArray:number = inventory.length;
+
+    for (let index = 1; index < 6; index++) {
+      last5.push(inventory[sizeArray - index])
+    }
+
+    return last5
   }
 
   async activate(body:{id:string, active:boolean}){
